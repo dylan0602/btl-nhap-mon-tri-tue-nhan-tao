@@ -1,3 +1,8 @@
+# install pip
+# pip install telegram
+# pip install python-telegram-bot
+# pip install beautifulsoup4
+
 import telegram.constants
 from bs4 import BeautifulSoup
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
@@ -8,8 +13,7 @@ import os
 import vnexpress
 import cryptonews
 
-SITE, PHOTO, LOCATION, BIO = range(4)
-from demo import logger
+SITE = range(1)
 
 list_web = {'vnexpress','cryptonews'}
 
@@ -30,15 +34,15 @@ def Connection():
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Starts the conversation and asks the user about their gender."""
+    """Starts the conversation"""
     reply_keyboard = [["Vnexpress", "CryptoNews"]]
 
     await update.message.reply_text(
-        "Hi! I'm a News Today Bot. I will give you some hot news today.\n"
-        "Send /cancel to stop talking to me.\n\n"
-        "Choose your site: ",
+        "Sup Guys, t là bot cập nhật tin tức hàng ngày cho human\n"
+        "Nhập lệnh /start để bắt đầu cuộc trò chuyện với t, còn nếu muốn đuổi tao đi thì /stop\n\n"
+        "Choose site: ",
         reply_markup=ReplyKeyboardMarkup(
-            reply_keyboard, one_time_keyboard=True, input_field_placeholder="Boy or Girl?"
+            reply_keyboard, one_time_keyboard=True
         ),
     )
 
@@ -65,12 +69,10 @@ async def news(update: Update, context):
         await update.message.reply_text(text=str1, parse_mode=telegram.constants.ParseMode.MARKDOWN,disable_web_page_preview=True)
 
 
-async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Cancels and ends the conversation."""
+async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     user = update.message.from_user
-    logger.info("User %s canceled the conversation.", user.first_name)
     await update.message.reply_text(
-        "Bye! I hope we can talk again some day.", reply_markup=ReplyKeyboardRemove()
+        "Bye, hẹn gặp lại các người!", reply_markup=ReplyKeyboardRemove()
     )
     return ConversationHandler.END
 
@@ -85,7 +87,7 @@ if __name__ == "__main__":
         states={
             SITE: [MessageHandler(filters.Regex("^(Vnexpress|CryptoNews)$"), news)],
         },
-        fallbacks=[CommandHandler("cancel", cancel)],
+        fallbacks=[CommandHandler("stop", stop)],
     )
     app.add_handler(conv_handler)
     app.run_polling()
