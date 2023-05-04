@@ -1,5 +1,5 @@
-from bs4 import BeautifulSoup
 import requests
+from bs4 import BeautifulSoup
 
 def getNews():
     list_news = []
@@ -14,4 +14,16 @@ def getNews():
         list_news.append(newsdict)
 
     return list_news
-
+def getContents(url):
+    s = requests.get(url)
+    soup = BeautifulSoup(s.content, "html.parser")
+    article = soup.find_all('div',class_='desc_cation',style=None) or soup.find_all('p',class_='Normal')
+    res = ""
+    line = ['']
+    element = soup.find('h1', class_='title-detail')
+    res += element.text+'\n'
+    for a in article:
+        line.append(a.text)
+    # for i in line:
+    #     res+=i+'\n'
+    return res
