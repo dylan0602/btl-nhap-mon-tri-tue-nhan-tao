@@ -24,6 +24,6 @@ def getContents(url):
     res += element.text+'\n'
     for a in article:
         line.append(a.text)
-    # for i in line:
-    #     res+=i+'\n'
+    for i in line:
+        res+=i+'\n'
     return res
