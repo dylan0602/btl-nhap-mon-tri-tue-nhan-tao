@@ -31,11 +31,22 @@ def Connection():
 
 async def start(update: Update, context):
     await update.message.reply_text(
+        "Tin tức mởi nhất hôm nay\n"
+    )
+    str1 = ""
+    vnexpress.set_path('tin-tuc-24h')
+
+    data = vnexpress.getNews()  # gọi đến hàm getNews() trong vnexpress.py
+    i = 0
+
+    for item in data:
+        i += 1
+        str1 += f'{i}. [{item["title"]}]({item["link"]})' + '\n'  # format dữ liệu thành stt + tiêu đề kèm link bài báo
+    await update.message.reply_text(text=str1, parse_mode=telegram.constants.ParseMode.MARKDOWN,
+                                    disable_web_page_preview=True)
+    await update.message.reply_text(
         "Chọn chủ đề bạn muốn đọc: "
     )
-
-
-
 
 async def message(update: Update, context):
     mess= str(update.message.text)  # lấy input từ người dùng
