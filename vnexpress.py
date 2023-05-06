@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from unidecode import unidecode
 path = ""
-def getNews(limit_news = 20):
+def getNews(limit_news = 10): # gioi han 10 trang tin
     list_news = []
     r = requests.get(f"https://vnexpress.net/{path}")
     soup = BeautifulSoup(r.text, 'html.parser')

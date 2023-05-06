@@ -5,47 +5,44 @@ import requests
 from gtts import gTTS
 from unidecode import unidecode
 import vnexpress
-topic = ["tin tuc 24h","the gioi","kinh doanh","khoa hoc","giai tri","the thao","phap luat","giao duc","suc khoe","doi song","du lich","so hoa","thu gian"]
+topics = ["tin tuc 24h","the gioi","kinh doanh","khoa hoc","giai tri","the thao","phap luat","giao duc","suc khoe","doi song","du lich","so hoa","thu gian"]
+
+type = ""
 def sample_response(input):
     user_mess = str(input).lower()
+    global type
 
     if user_mess in ("hi", "hello", "ok"):
+        type = "greeting"
         return "Hi Bro :v"
     if user_mess in ("time", "time?"):
+        type = "greeting"
         now = "Hôm nay là: " + dtm.now().strftime("%d-%m-%y, %H:%M:%S")
         return str(now)
-    if unidecode(user_mess).lower() in topic and isinstance(user_mess, str):
-        str1 = ""
-        vnexpress.set_path(user_mess.replace(' ', '-'))
+    for topic in topics:
+        if unidecode(user_mess).lower().__contains__(topic):
+            type="topic"
+            return user_mess
+    if user_mess[0].isdigit():
+        try:
+            choice = int(user_mess)
+            article = vnexpress.getNews()[choice - 1]['link']
+            result = str(vnexpress.getContents(article))  # lấy nội dung bài báo từ hàm getContents()
+            if len(result.split()) >= 500:  # Nếu nội dung bài báo dài hơn 500 từ => ghi vào 1 file và gửi lại cho người dùng (Do message mà bot gửi lên bị giới hạn kích thước)
+                write_file(result)
 
-        data = vnexpress.getNews()
-        i = 0
-
-        for item in data:
-            i += 1
-            str1 += f'{i}. [{item["title"]}]({item["link"]})' + '\n'  # format dữ liệu thành stt + tiêu đề kèm link bài báo
-        noti = "\nChọn bài báo để đọc (Nhập id bài báo tương ứng với stt ở trên):"
-        return str1+noti
-
-    else:
-        if user_mess[0].isdigit():
-            try:
-                choice = int(user_mess)
-                article = vnexpress.getNews()[choice - 1]['link']
-                result = str(vnexpress.getContents(article))  # lấy nội dung bài báo từ hàm getContents()
-                if len(result.split()) >= 500:  # Nếu nội dung bài báo dài hơn 500 từ => ghi vào 1 file và gửi lại cho người dùng (Do message mà bot gửi lên bị giới hạn kích thước)
-                    write_file(result)
-                    try:
-                        audio(result)
-                        return open('output.txt', encoding="utf8")
-                    except:
-                        print('Error. Try again')
-                else:
-                    audio(result)
-                    return result
-            except(ValueError, IndexError):
-                return 'Vui lòng nhập số hợp lệ!!'
-        else: return "Vui lòng chọn chủ đề phù hợp (Thế giới, Kinh doanh, Khoa học, Giải trí, Thể thao, Pháp luật, Giáo dục, Sức khỏe, etc.)"
+                try:
+                    type = "file"
+                    # audio(result)
+                    return open('output.txt', encoding="utf8")
+                except:
+                    print('Error. Try again')
+            else:
+                type="content"
+                # audio(result)
+                return result
+        except(ValueError, IndexError):
+            return 'Vui lòng nhập số hợp lệ!!'
 
     return "Hmmm..."
 
