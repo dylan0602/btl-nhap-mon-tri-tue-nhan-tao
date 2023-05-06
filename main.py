@@ -1,4 +1,6 @@
 import requests
+from gtts import gTTS
+
 import Constants as keys
 import Responses
 import Responses as R
@@ -68,14 +70,51 @@ def handle_message(update: Update, context: CallbackContext):
                 update.message.reply_text("Nhập id tương ứng với stt các bài báo trên để đọc chi tiết")
         if check==False:
             update.message.reply_text("Không tìm thấy chủ đề!!!")
+    elif(response.isnumeric()):
+        try:
+            choice = response
+            article = vnexpress.getNews()[int(choice) - 1]['link']
+            result = str(vnexpress.getContents(article))  # lấy nội dung bài báo từ hàm getContents()
+            if len(result.split()) >= 500:  # Nếu nội dung bài báo dài hơn 500 từ => ghi vào 1 file và gửi lại cho người dùng (Do message mà bot gửi lên bị giới hạn kích thước)
+                write_file(result)
 
-    elif(Responses.type=="file"):
-        file = open('output.txt', encoding="utf8")
-        update.message.reply_document(file)
-    elif(Responses.type=="content"):
-        update.message.reply_text(response)
+                try:
+                    # audio(result)
+                    update.message.reply_document(open('output.txt', encoding="utf8"))
+                except:
+                    print('Error. Try again')
+            else:
+                # audio(result)
+                update.message.reply_text(result)
+        except(ValueError, IndexError):
+            update.message.reply_text(f'Vui lòng nhập id hợp lệ!!')
     elif(Responses.type=="greeting"):
         update.message.reply_text(response)
+
+def write_file(str):
+    file = open("output.txt", "w", encoding="utf-8")
+    file.write(str)
+    file.close()
+
+def audio(text):
+    text1 = text[0:len(text)//5]
+    tts = gTTS(text1, lang='vi', slow=False)
+    audio_file = f'output.mp3'
+    tts.save(audio_file)
+    with open('output.mp3', 'rb') as audio: # Gửi payload chứa thông tin chat_id của bot, title audio kèm với file audio
+        payload = {
+            'chat_id': keys.CHAT_ID,
+            'title': 'output.mp3',
+        }
+        files = {
+            'audio': audio.read(),
+        }
+        resp = requests.post(
+            f"https://api.telegram.org/bot{keys.API_KEY}/sendAudio".format(
+                token=keys.API_KEY),
+            data=payload,
+            files=files).json()
+    audio.close()
 
 
 def auto_update(_):
