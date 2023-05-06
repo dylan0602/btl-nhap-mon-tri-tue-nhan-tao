@@ -1,5 +1,3 @@
-import datetime
-
 import requests
 
 import Constants as keys
@@ -56,7 +54,7 @@ def handle_message(update: Update, context: CallbackContext):
 def auto_update(_):
     url = f'https://api.telegram.org/bot6201919863:AAHDB2SNjwq6hBdjkH3-QN8XXsxwvxBbBdU/sendMessage?chat_id=1392207357&text='
 
-    requests.get(url+str(pytz.timezone('Asia/Ho_Chi_Minh').localize(dtm.datetime.now())))
+    requests.get("Tin tức mới nhất hôm nay\n"+url+str(pytz.timezone('Asia/Ho_Chi_Minh').localize(dtm.datetime.now())))
     requests.get(url+tin_tuc_24h(5))
 def main():
     updater = Updater(keys.API_KEY)
