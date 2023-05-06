@@ -2,11 +2,11 @@ import requests
 from bs4 import BeautifulSoup
 from unidecode import unidecode
 path = ""
-def getNews():
+def getNews(limit_news = 20):
     list_news = []
     r = requests.get(f"https://vnexpress.net/{path}")
     soup = BeautifulSoup(r.text, 'html.parser')
-    mydivs = soup.find_all("h3", {"class": "title-news"})
+    mydivs = soup.find_all("h3", {"class": "title-news"},limit=limit_news)
 
     for new in mydivs:
         newsdict = {}
@@ -33,6 +33,6 @@ def getContents(url):
 def set_path(p):
     global path
     path = unidecode(p).lower()
-def get_path():
-    return path
+
+
 
