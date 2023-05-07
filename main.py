@@ -6,7 +6,7 @@ import Responses
 import Responses as R
 import telegram
 from telegram import Update
-from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackContext, Filters, Updater
+from telegram.ext import CommandHandler, MessageHandler, CallbackContext, Filters, Updater
 import vnexpress
 import datetime as dtm
 from datetime import time

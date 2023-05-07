@@ -19,9 +19,10 @@ def sample_response(input):
         type='number'
         return user_mess
     else:
+        type = "topic"
         for topic in topics:
             if unidecode(user_mess).lower().__contains__(topic):
-                type="topic"
+                # type="topic"
                 return user_mess
         return "Không tìm thấy chủ đề!!!"
 
